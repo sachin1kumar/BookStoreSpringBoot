@@ -1,23 +1,22 @@
 package com.udemy.spring.boot.Spring.boot.learning.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
-@Entity
+import javax.persistence.*;
+import java.math.BigInteger;
+
+@Entity(name = "book")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Book {
 
     @Id
-    private final int id;
-    private final String name;
-    private final String price;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger book_id;
+    private String name;
+    private String price;
 
-    public Book(int id, String name, String price) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
+    public Book() {
+
     }
 
     public String getPrice() {
@@ -28,8 +27,19 @@ public class Book {
         return name;
     }
 
-    public int getId() {
-        return id;
+    public BigInteger getId() {
+        return book_id;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setId(BigInteger book_id) {
+        this.book_id = book_id;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 }
