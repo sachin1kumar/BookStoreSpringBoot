@@ -11,6 +11,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class BooksController {
@@ -38,6 +39,11 @@ public class BooksController {
             throw new BookNotFoundException("Book not found");
         }
         return book;
+    }
+
+    @GetMapping("/allBooks")
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
     }
 
     @DeleteMapping("/delete/books/{id}")
