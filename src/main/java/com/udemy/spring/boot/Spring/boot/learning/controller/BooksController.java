@@ -3,6 +3,7 @@ package com.udemy.spring.boot.Spring.boot.learning.controller;
 import com.udemy.spring.boot.Spring.boot.learning.model.Book;
 import com.udemy.spring.boot.Spring.boot.learning.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -33,14 +34,18 @@ public class BooksController {
         Book book = bookRepository.getOne(id);
         try {
             book.getId();
-        } catch (Exception e) {
-            if (e instanceof EntityNotFoundException) {
-                throw new BookNotFoundException("Book not found");
-            }
+        } catch (EntityNotFoundException e) {
+            throw new BookNotFoundException("Book not found");
         }
         return book;
     }
 
-
-
+    @DeleteMapping("/delete/books/{id}")
+    public void deleteBook(@PathVariable BigInteger id) {
+        try{
+            bookRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new BookNotFoundException("Book not found");
+        }
+    }
 }
