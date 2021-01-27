@@ -4,11 +4,11 @@ import com.udemy.spring.boot.Spring.boot.learning.model.Book;
 import com.udemy.spring.boot.Spring.boot.learning.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.persistence.EntityNotFoundException;
+import java.math.BigInteger;
 import java.net.URI;
 
 @RestController
@@ -27,5 +27,20 @@ public class BooksController {
                 .buildAndExpand(savedBook.getId()).toUri();
         return ResponseEntity.created(bookPath).build();
     }
+
+    @GetMapping("/books/{id}")
+    public Book getBookDetail(@PathVariable BigInteger id) {
+        Book book = bookRepository.getOne(id);
+        try {
+            book.getId();
+        } catch (Exception e) {
+            if (e instanceof EntityNotFoundException) {
+                throw new BookNotFoundException("Book not found");
+            }
+        }
+        return book;
+    }
+
+
 
 }
