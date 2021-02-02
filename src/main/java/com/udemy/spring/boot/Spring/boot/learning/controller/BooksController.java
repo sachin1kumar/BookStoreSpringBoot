@@ -4,14 +4,20 @@ import com.udemy.spring.boot.Spring.boot.learning.model.Book;
 import com.udemy.spring.boot.Spring.boot.learning.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.Valid;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 public class BooksController {
@@ -20,7 +26,7 @@ public class BooksController {
     private BookRepository bookRepository;
 
     @PostMapping("/books")
-    public ResponseEntity<Object> addBook(@RequestBody Book book) {
+    public ResponseEntity<Object> addBook(@RequestBody @Valid Book book) {
         Book savedBook = bookRepository.save(book);
         //Return 201 with URL including id.
         URI bookPath = ServletUriComponentsBuilder.
@@ -31,14 +37,21 @@ public class BooksController {
     }
 
     @GetMapping("/books/{id}")
-    public Book getBookDetail(@PathVariable BigInteger id) {
+    public EntityModel<Book> getBookDetail(@PathVariable BigInteger id) {
         Book book = bookRepository.getOne(id);
+        EntityModel<Book> resource = null;
         try {
             book.getId();
+
+            //HATEOAS handling..
+            resource = EntityModel.of(book);
+            WebMvcLinkBuilder linkTo =
+                    linkTo(methodOn(this.getClass()).getAllBooks());
+            resource.add(linkTo.withRel("all-books"));
         } catch (EntityNotFoundException e) {
             throw new BookNotFoundException("Book not found");
         }
-        return book;
+        return resource;
     }
 
     @GetMapping("/allBooks")
