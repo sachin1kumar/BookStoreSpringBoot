@@ -2,13 +2,16 @@ package com.udemy.spring.boot.Spring.boot.learning.controller;
 
 import com.udemy.spring.boot.Spring.boot.learning.model.Book;
 import com.udemy.spring.boot.Spring.boot.learning.repositories.BookRepository;
+import org.hibernate.validator.spi.messageinterpolation.LocaleResolverContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.persistence.EntityNotFoundException;
@@ -74,8 +77,8 @@ public class BooksController {
     }
 
     @GetMapping("/hello-world/internationalised")
-    public String getHelloMessage(@RequestHeader(name = "Accept-language"
-            , required = false) Locale locale) {
-        return messageSource.getMessage("greeting-message", null, locale);
+    public String getHelloMessage() {
+        return messageSource.getMessage("greeting-message", null,
+                LocaleContextHolder.getLocale());
     }
 }
