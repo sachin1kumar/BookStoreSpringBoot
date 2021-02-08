@@ -3,6 +3,7 @@ package com.udemy.spring.boot.Spring.boot.learning.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.math.BigInteger;
 
 @Entity(name = "book")
@@ -12,6 +13,7 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger book_id;
+    @Size(min = 4)
     private String name;
     private String price;
 
