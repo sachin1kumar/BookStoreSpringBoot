@@ -2,7 +2,6 @@ package com.udemy.spring.boot.Spring.boot.learning.controller;
 
 import com.udemy.spring.boot.Spring.boot.learning.model.Book;
 import com.udemy.spring.boot.Spring.boot.learning.repositories.BookRepository;
-import org.hibernate.validator.spi.messageinterpolation.LocaleResolverContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -11,15 +10,13 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.net.URI;
 import java.util.List;
-import java.util.Locale;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -46,19 +43,16 @@ public class BooksController {
 
     @GetMapping("/books/{id}")
     public EntityModel<Book> getBookDetail(@PathVariable BigInteger id) {
-        Book book = bookRepository.getOne(id);
-        EntityModel<Book> resource = null;
-        try {
-            book.getId();
+        Optional<Book> book = bookRepository.findById(id);
 
-            //HATEOAS handling..
-            resource = EntityModel.of(book);
-            WebMvcLinkBuilder linkTo =
-                    linkTo(methodOn(this.getClass()).getAllBooks());
-            resource.add(linkTo.withRel("all-books"));
-        } catch (EntityNotFoundException e) {
+        if (book.isEmpty()) {
             throw new BookNotFoundException("Book not found");
         }
+        //HATEOAS handling..
+        EntityModel<Book> resource = EntityModel.of(book.get());
+        WebMvcLinkBuilder linkTo =
+                linkTo(methodOn(this.getClass()).getAllBooks());
+        resource.add(linkTo.withRel("all-books"));
         return resource;
     }
 
